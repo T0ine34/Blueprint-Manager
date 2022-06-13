@@ -1,2 +1,2 @@
-# Blueprint-Handler
- Blueprint handler for space engineers
+# Blueprint Manager
+ Blueprint manager for space engineers
