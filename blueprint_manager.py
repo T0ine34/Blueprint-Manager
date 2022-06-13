@@ -16,11 +16,28 @@ from webbrowser import open_new_tab
 
 from threading import Thread
 
+def INIT():
+    #init the application from the json file paths.json
+    global PATH
+    global STEAMCMD_PATH
+    global BLUEPRINTS
+    global DISABLED_PATH
 
-PATH = '\\'.join(sys.argv[0].split('/')[:-1])
+    with open("paths.json", "r") as f:
+        paths = loads(f.read())
+        PATH = paths["path"]
+        STEAMCMD_PATH = paths["steamcmd"]
+        BLUEPRINTS = paths["blueprints"]
+        DISABLED_PATH = paths["disabled"]
+
+
+PATH = '\\'.join(sys.argv[0].split('/')[:-1])                                                                       #TODO remove these 4 lines
 BLUEPRINTS = "C:/spaceengineers/blueprints"
 DISABLED_PATH = PATH+"/disabled"
 STEAMCMD_PATH = "C:/steamcmd"
+
+#INIT()                                                                                                             #TODO : create the file paths.json and activate this line
+
 if not "disabled" in listdir(PATH):
     mkdir(DISABLED_PATH)
 
