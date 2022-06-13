@@ -14,6 +14,7 @@ APP = "Blueprint-Manager" #Must be the name of the github repo
 
 URL = "https://github.com/T0ine34/%s" % APP #! Do not change this
 RAWURL = "https://raw.githubusercontent.com/T0ine34/%s" % APP #! Do not change this
+APIURL = "https://api.github.com/repos/T0ine34/%s" % APP
 
 def md2html(md):
     '''
@@ -30,9 +31,40 @@ def load_rules():
         return md2html(rules)
     else:
         return "Rules not found"
+
+def get_releases():
+    '''
+    Load the list of releases from the github api
+    '''
+    releases = []
+    json = get(APIURL+"/releases").json()
+    for i in range(len(json)):
+        releases.append({'name': json[i]['tag_name'], 'id': json[i]['id']})
+    return releases
     
 
+class Listbox_Scrollable(tk.Frame):
+    """
+    Listbox with vertical scrollbar
+    Usage is the same as the standard Tkinter listbox
+    """
+    def __init__(self, parent, *args, **kwargs):
+        tk.Frame.__init__(self, parent)
+        self.listbox = tk.Listbox(self, *args, **kwargs)
+        self.scrollbar = tk.Scrollbar(self, orient="vertical", command=self.listbox.yview)
+        self.listbox.configure(yscrollcommand=self.scrollbar.set)
+        self.listbox.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
 
+        __doc__ = self.listbox.__doc__
+
+    def __getattr__(self, attr):
+        # Delegate attribute to listbox
+        return getattr(self.listbox, attr)
+
+    def bind(self, *args, **kwargs):
+        # Delegate bind to listbox
+        return self.listbox.bind(*args, **kwargs)
 
 class Installer(tk.Tk):
     def __init__(self):
@@ -51,6 +83,7 @@ class Installer(tk.Tk):
         self.previous_button = tk.Button(self, text="Previous", command=self.previous, state="disabled")
 
         self.rules = load_rules()
+        self.list_releases = get_releases()
 
         self.__init_steps__()
 
@@ -113,6 +146,7 @@ class Installer(tk.Tk):
             self.next_button.config(state="disabled")
             self.f_accept_conditions.pack(fill="both", expand=True)
         elif self.current_step == 2:
+            self.next_button.config(state="disabled")
             self.f_choose_version.pack(fill="both", expand=True)
         elif self.current_step == 3:
             self.f_choose_paths.pack(fill="both", expand=True)
@@ -156,6 +190,20 @@ class Installer(tk.Tk):
         self.f_choose_version = tk.Frame(self.content, background="white")
         tk.Label(self.f_choose_version, text="Choose the version of the Blueprint Manager", font="Helvetica 14 bold",
             background="white").pack(fill="both", expand=True)
+        #create a scrollable list of releases
+        self.list_releases_var = tk.StringVar()
+        self.list_releases_var.set(self.list_releases[0]['name'])
+        self.version_menu = Listbox_Scrollable(self.f_choose_version, width = 20, height = 20, listvariable = self.list_releases_var)
+
+        for release in self.list_releases[1:]:
+            self.version_menu.insert(tk.END, release['name'])
+        self.version_menu.pack()
+        self.version_menu.bind("<<ListboxSelect>>", self.choose_version_changed)
+
+    def choose_version_changed(self, *args):
+        self.next_button.config(state="normal")
+
+
 
 
     def choose_paths(self):
