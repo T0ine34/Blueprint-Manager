@@ -2,9 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-from blueprint_manager import Blueprint, Storage, Threading
+from blueprint_manager import *
 import textwrap
 from re import split
+import os
+import webbrowser
 
 def list(object = None):
     '''call the mothod __list__ of the object if is defined, else create an empty list'''
@@ -22,9 +24,86 @@ def resize(img, new_width):
     new_height = int(height * ratio)
     return img.resize((new_width, new_height))
 
-def is_allowed(string):
+def is_allowed_int(string):
     #allow a string if it's a number or a numbers separated by a space or a comma
     return string.isdigit() or " ".join(string.split()).replace(",", " ").replace(" ", "").isdigit() or string  == ""
+
+def is_allowed_path(string):
+    #allow a string if it's a real path
+    return os.path.exists(string)
+
+
+class Parameters(tk.Toplevel):
+    """
+    Show the parameters of the programm and allow to change them
+    Parameters to change:
+    - disabled blueprints location
+    - enabled blueprints location
+    - steamcmd.exe location
+    """
+    
+    def __init__(self, parent):
+        tk.Toplevel.__init__(self, parent)
+        self.parent = parent
+        self.title("Parameters")
+        self.geometry("300x300")
+        self.resizable(False, False)
+        self.configure(background = "white")
+        self.protocol("WM_DELETE_WINDOW", self.close)
+        self.create_widgets()
+        self.grab_set()
+        self.focus_set()
+        self.wait_window(self)
+        
+    def create_widgets(self):
+        self.disabled_path = tk.StringVar()
+        self.disabled_path.set(DISABLED_PATH)
+
+        self.enabled_path = tk.StringVar()
+        self.enabled_path.set(BLUEPRINTS)
+
+        self.steamcmd_path = tk.StringVar()
+        self.steamcmd_path.set(STEAMCMD_PATH)
+
+        self.steamcmd_path_label = tk.Label(self, text = "Steamcmd path:", background = "white")
+        self.steamcmd_path_label.grid(row = 0, column = 0, sticky = "w")
+        self.steamcmd_path_entry = tk.Entry(self, textvariable = self.steamcmd_path)
+        self.steamcmd_path_entry.grid(row = 0, column = 1, sticky = "w")
+
+        self.disabled_path_label = tk.Label(self, text = "Disabled blueprints path:", background = "white")
+        self.disabled_path_label.grid(row = 1, column = 0, sticky = "w")
+        self.disabled_path_entry = tk.Entry(self, textvariable = self.disabled_path)
+        self.disabled_path_entry.grid(row = 1, column = 1, sticky = "w")
+
+        self.enabled_path_label = tk.Label(self, text = "Enabled blueprints path:", background = "white")
+        self.enabled_path_label.grid(row = 2, column = 0, sticky = "w")
+        self.enabled_path_entry = tk.Entry(self, textvariable = self.enabled_path)
+        self.enabled_path_entry.grid(row = 2, column = 1, sticky = "w")
+
+        self.save_button = tk.Button(self, text = "Save", command = self.save)
+        self.save_button.grid(row = 3, column = 0, columnspan = 2, sticky = "w")
+
+        self.close_button = tk.Button(self, text = "Close", command = self.close)
+        self.close_button.grid(row = 4, column = 0, columnspan = 2, sticky = "w")
+
+    def save(self):
+        """
+        Save the parameters
+        """
+        DISABLED_PATH = self.disabled_path.get()
+        BLUEPRINTS = self.enabled_path.get()
+        STEAMCMD_PATH = self.steamcmd_path.get()
+        self.close()
+
+    def close(self):
+        """
+        Close the window
+        """
+        self.destroy()
+
+    
+
+
 
 class GUI(tk.Tk):
     def __init__(self):
@@ -34,19 +113,62 @@ class GUI(tk.Tk):
         self.max_nb_elt_per_row = 4 # Max number of elements per row
 
         self.geometry("%dx800"%(self.max_nb_elt_per_row*210))
-        
+
+        self.configure(background = "white")
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.close)
+
+               
         self.storage = Storage()
         self.blueprints = GUI.Blueprints_List(self)
         self.blueprints.pack_frame(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        self.menu = GUI.Menubar(self)
+        self.menu.pack(side = "top", fill = "x")
 
         self.input = GUI.Input(self)
         self.input.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.downloading = GUI.Downloading(self)
-        self.downloading.pack(side=tk.BOTTOM, fill=tk.X)
+        self.downloading.pack(side=tk.BOTTOM, fill=tk.X)       
 
         self.mainloop()
-            
+
+    def close(self):
+        """close the window"""
+        self.destroy()
+
+    def parameters(self):
+        """open the parameters window"""
+        Parameters(self)
+
+    def help(self):
+        """open the help.txt file in github project"""
+        webbrowser.open("https://github.com/T0ine34/Blueprint-Manager/blob/main/help.txt")
+
+    class Menubar(tk.Menu):
+        """
+        Create 1 submenu:
+        - "Files"
+        And 2 button:
+        - "Parameters" (open a window to change the parameters)
+        - "Help" (open help page in github)
+        """
+        def __init__(self, parent):
+            super().__init__(parent)
+            self.parent = parent
+            self.file = tk.Menu(self, tearoff=0)
+            self.add_cascade(label="Files", menu=self.file)
+            self.file.add_command(label="Save", command=self.parent.storage.save)
+            self.file.add_command(label="Load", command=self.parent.storage.load)
+            self.file.add_separator()
+            self.file.add_command(label="Quit", command=self.parent.quit)
+            self.button = tk.Menu(self, tearoff=0)
+            self.add_cascade(label="Parameters", menu=self.button)
+            self.button.add_command(label="Change", command=self.parent.parameters)
+            self.button.add_command(label="Help", command=self.parent.help)
+
+
 
     class Blueprints_List(tk.Frame):
         def __init__(self, master):
@@ -223,7 +345,7 @@ class GUI(tk.Tk):
 
                 def check(self, *args):
                     #allow only numbers, empty string and numbers with a comma
-                    if is_allowed(self.get()):
+                    if is_allowed_int(self.get()):
                         self.old_value = self.get()
                     else:
                         self.set(self.old_value)
@@ -249,6 +371,8 @@ class GUI(tk.Tk):
             blueprint.pack()
             self.items.append(blueprint)
             return blueprint
+
+
     
 
 g = GUI()

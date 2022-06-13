@@ -20,6 +20,7 @@ from threading import Thread
 PATH = '\\'.join(sys.argv[0].split('/')[:-1])
 BLUEPRINTS = "C:/spaceengineers/blueprints"
 DISABLED_PATH = PATH+"/disabled"
+STEAMCMD_PATH = "C:/steamcmd"
 if not "disabled" in listdir(PATH):
     mkdir(DISABLED_PATH)
 
@@ -27,7 +28,6 @@ URL = "https://steamcommunity.com/sharedfiles/filedetails/?id=%d"
 
 def download(mod_id):
     print("Downloading %d from steam" % mod_id, end="")
-    path = "C:/steamcmd"
     exe = "/steamcmd.exe"
     login = ["+login", "anonymous"]
     app_id = 244850
@@ -35,11 +35,11 @@ def download(mod_id):
     logfile = "C:/spaceengineers/logs/"+str(mod_id)+".log"
     log_arg = "> "+logfile
     fh = open("NUL", 'w')
-    res = call([path+exe]+login+["+workshop_download_item %d %d" % (int(app_id), int(mod_id)), quit, log_arg], stdout = fh, stderr = fh)
+    res = call([STEAMCMD_PATH+exe]+login+["+workshop_download_item %d %d" % (int(app_id), int(mod_id)), quit, log_arg], stdout = fh, stderr = fh)
     fh.close()
-    if str(mod_id) in listdir(path+"/steamapps/workshop/content/%d" % app_id):
+    if str(mod_id) in listdir(STEAMCMD_PATH+"/steamapps/workshop/content/%d" % app_id):
         print("\t[OK]")
-        return True,path+"/steamapps/workshop/content/%d/%d" % (int(app_id), int(mod_id))
+        return True,STEAMCMD_PATH+"/steamapps/workshop/content/%d/%d" % (int(app_id), int(mod_id))
     else:
         print("\t[FAIL]")
         return False,None
