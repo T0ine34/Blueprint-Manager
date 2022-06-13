@@ -46,7 +46,7 @@ class Parameters(tk.Toplevel):
         tk.Toplevel.__init__(self, parent)
         self.parent = parent
         self.title("Parameters")
-        self.geometry("300x300")
+        self.geometry("800x300")
         self.resizable(False, False)
         self.configure(background = "white")
         self.protocol("WM_DELETE_WINDOW", self.close)
@@ -67,17 +67,17 @@ class Parameters(tk.Toplevel):
 
         self.steamcmd_path_label = tk.Label(self, text = "Steamcmd path:", background = "white")
         self.steamcmd_path_label.grid(row = 0, column = 0, sticky = "w")
-        self.steamcmd_path_entry = tk.Entry(self, textvariable = self.steamcmd_path)
+        self.steamcmd_path_entry = tk.Entry(self, textvariable = self.steamcmd_path, width = 100)
         self.steamcmd_path_entry.grid(row = 0, column = 1, sticky = "w")
 
         self.disabled_path_label = tk.Label(self, text = "Disabled blueprints path:", background = "white")
         self.disabled_path_label.grid(row = 1, column = 0, sticky = "w")
-        self.disabled_path_entry = tk.Entry(self, textvariable = self.disabled_path)
+        self.disabled_path_entry = tk.Entry(self, textvariable = self.disabled_path, width = 100)
         self.disabled_path_entry.grid(row = 1, column = 1, sticky = "w")
 
         self.enabled_path_label = tk.Label(self, text = "Enabled blueprints path:", background = "white")
         self.enabled_path_label.grid(row = 2, column = 0, sticky = "w")
-        self.enabled_path_entry = tk.Entry(self, textvariable = self.enabled_path)
+        self.enabled_path_entry = tk.Entry(self, textvariable = self.enabled_path, width = 100)
         self.enabled_path_entry.grid(row = 2, column = 1, sticky = "w")
 
         self.save_button = tk.Button(self, text = "Save", command = self.save)
@@ -124,7 +124,7 @@ class GUI(tk.Tk):
         self.blueprints.pack_frame(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.menu = GUI.Menubar(self)
-        self.menu.pack(side = "top", fill = "x")
+        self.config(menu=self.menu)
 
         self.input = GUI.Input(self)
         self.input.pack(side=tk.BOTTOM, fill=tk.X)
@@ -165,7 +165,7 @@ class GUI(tk.Tk):
             self.file.add_command(label="Quit", command=self.parent.quit)
             self.button = tk.Menu(self, tearoff=0)
             self.add_cascade(label="Parameters", menu=self.button)
-            self.button.add_command(label="Change", command=self.parent.parameters)
+            self.button.add_command(label="Edit", command=self.parent.parameters)
             self.button.add_command(label="Help", command=self.parent.help)
 
 
