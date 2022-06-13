@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-from blueprint_handler import Blueprint, Storage, Threading
+from blueprint-manager import Blueprint, Storage, Threading
 import textwrap
 from re import split
 
