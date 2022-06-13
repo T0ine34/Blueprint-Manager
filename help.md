@@ -7,7 +7,7 @@ It is designed to be used by anyone who wants easily manage their blueprints.
 
 ## Features
 
-- Search for blueprints <span style="color:red">(Not yet implemented)</span>
+- Search for blueprints ![#FF0000](Not yet implemented)
 - Enable/disable blueprints
 - Delete definively blueprints
 - Import/export configuration
