@@ -1,5 +1,3 @@
-[//]: # This is the help file for the Blueprint Manager Application.
-
 # Blueprint Manager Application for Space Engineers
 
 ## Overview
