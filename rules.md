@@ -5,3 +5,9 @@
     - This also means that the application is not yet stable.
 - The creator of this application is not responsible for any damage caused by this application.
 - In case of any issues, please contact the creator of this application [here](https://github.com/T0ine34/Blueprint-Manager/issues/new).
+- The content managed by this application is not affiliated this application.
+- For more information about the content managed by this application, please the steam page of the content.
+- In case of a blueprint became broken, please contact the creator of the blueprint.
+- If the blueprint became unsupported, please don't contact the creator of this application.
+- This application is open source, feel free to use it and share it.
+- This application is free, and is intended to be free forever.
