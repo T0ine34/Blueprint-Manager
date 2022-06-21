@@ -9,5 +9,5 @@
 - For more information about the content managed by this application, please the steam page of the content.
 - In case of a blueprint became broken, please contact the creator of the blueprint.
 - If the blueprint became unsupported, please don't contact the creator of this application.
-- This application is open source, feel free to use it and share it.
+- This application is open source, feel free to use it and share it !
 - This application is free, and is intended to be free forever.
